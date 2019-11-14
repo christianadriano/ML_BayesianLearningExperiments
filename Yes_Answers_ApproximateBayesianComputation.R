@@ -7,7 +7,13 @@ different programming skill (score).
 Each question would have a posterior probability.
 
 I want to estimate how many Yes´s would come out if I ask the question to N different participants
-with different programming skills.
+with different programming skills 
+
+Priors:
+- Prior probability on the distribution of skill within each question
+- Prior probability on the average number of Yes. Since I don't whether the answer is a NO or IDK,
+I can assume two types of answers (YES and NOT YES). This way, I can use a binomial distribution
+as the generative process.
 
 P()
 "
@@ -15,7 +21,7 @@ n_picked <- 5 # The number of answers to sample from a question
 
 answers_sim <- replicate(100000, {
   # Generating a sample of the parameters from the priors
-  prior_mu <- 5 #average number of Yes
+  prior_mu <- 3 #average number of Yes 
   prior_sd <- 2
   prior_size <- -prior_mu^2 / (prior_mu - prior_sd^2)
   n_socks <- rnbinom(1, mu = prior_mu, size = prior_size)
