@@ -11,19 +11,21 @@ prior <- runif(n_draws, min = 0, max = 1)# Here you sample n_draws draws from th
 hist(prior) # It's always good to eyeball the prior to make sure it looks ok.
 
 # Here you define the generative model
-generative_model <- function(prob_of_success)
+generative_model <- function(prob_of_success){
   success <-  1
   trials <-  16
   subscribers <- rbinom(n=success, size=trials, prob=prob_of_success)
-  subscribers
+  print(subscribers)
 }
 
 # Here you simulate data using the parameters from the prior and the 
 # generative model
-sim_data <- rep(1:4, n_draws)
+sim_data <- rep(0, n_draws)
 for(i in 1:n_draws) {
-  sim_data[i] <- generative_model(prior[i])
+  sim_data[i] <-  generative_model(prior[i])
 }
+
+observed_data = 1
 
 # Here you filter off all draws that do not match the data.
 posterior <- prior[sim_data == observed_data] 
