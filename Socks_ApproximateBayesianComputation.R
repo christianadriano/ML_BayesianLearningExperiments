@@ -3,6 +3,7 @@ Approximate Bayesian Computation
 
 Show how ABC can easily approximate a prior distribution when there is not enough data.
 This is the case of my 10 to 20 answers per question.
+Example from https://www.youtube.com/watch?v=nKCT-Cdk0xY
 
 "
 
