@@ -25,7 +25,7 @@ for(i in 1:n_draws) {
   sim_data[i] <-  generative_model(prior[i])
 }
 
-observed_data = 1
+observed_data = 6 #people who signed up
 
 # Here you filter off all draws that do not match the data.
 posterior <- prior[sim_data == observed_data] 
