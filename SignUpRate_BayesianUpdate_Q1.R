@@ -39,3 +39,8 @@ length(posterior) # See that we got enought draws left after the filtering.
 # or the median posterior, and perhaps a 95% quantile interval.
 median(posterior)
 quantile(posterior, c(0.025, 0.975))
+
+#Question II) What's the probability that method A is better than telemarketing?
+sum(posterior > 0.2) / length(posterior) #has to divide by length because the posterior is not normalized
+#[1] 0.9695431
+
