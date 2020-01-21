@@ -75,7 +75,8 @@ for (i in 1:length(answerList)) {
   prior <-  posterior
 }
 
-###############################
+##############################################################################
+##############################################################################
 "Example from https://www.r-bloggers.com/understanding-bayesian-inference-with-a-simple-example-in-r/
 check also - http://www.sumsar.net/ 
 Coin flipping experiment, which wemodel with a binomial distribution: binomial(n, p)
@@ -109,6 +110,11 @@ likelihood <- function(h, n, p){
 
 #prior as a beta function
 dbeta(p, 1, 1)
+
+# Set the numer of tosses.  
+n <- 100
+# Set the number of heads obtained.  
+h <- 73  
 
 "Now, the acceptance probability (R, see equations in Step 3) will
 be the minimum value: 1 or the ratio of posterior
