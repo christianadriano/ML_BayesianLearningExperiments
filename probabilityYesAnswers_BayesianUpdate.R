@@ -101,6 +101,20 @@ that is often difficult to obtain with more complex models.
 
 Let's stop here a little bit to explain each term of this equation."
 
+#Likehood as a binomial function
+likelihood <- function(h, n, p){  
+  lh <- dbinom(h, n, p)  
+  lh  
+}  
+
+#prior as a beta function
+dbeta(p, 1, 1)
+
+"Now, the acceptance probability (R, see equations in Step 3) will
+be the minimum value: 1 or the ratio of posterior
+probabilities given the different p. We express this equation in R language as follows"
+
+R <- likelihood(h,n,p_prime)/likelihood(h,n,p) * (dbeta(p_prime,1,1)/dbeta(p,1,1))  
 
 ###############################
 
