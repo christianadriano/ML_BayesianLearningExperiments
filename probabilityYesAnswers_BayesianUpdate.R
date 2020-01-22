@@ -148,7 +148,21 @@ for (i in 1:nrep) {
   print(i)  
 }  
 
+###################
+# PLOTTING
 
+par(mfrow= c(1,2))  
+prior <- rbeta(5000, 1,1)  
+plot(1:5000 ,posterior$V2, cex=0, xlab = "generations", ylab = "p",  
+     main = "trace of MCMC\n accepted values of parameter p\n prior = beta(1,1) generations = 5000")  
+lines(1:5000, posterior$V2, cex=0)  
+abline(h=mean(posterior$V2), col="red")  
+plot(density(posterior$V2), xlim = c(min(min(prior),min((posterior$V2))), max(max(prior),max((posterior$V2)))),   
+     ylim = c(0, max(max(density(prior)$y),max((density(posterior$V2)$y)))), main= "prior VS posterior\n prior= beta(1,1)",  
+     lwd=3, col="red")  
+lines(density(prior), lwd=3, lty=2, col="blue")  
+legend("topleft", legend=c("prior density","posterior density"),  
+       col=c("blue","red"), lty=c(3,1), lwd=c(3,3), cex = 1)
 
 ###############################
 
