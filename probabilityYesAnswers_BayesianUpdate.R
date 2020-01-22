@@ -122,6 +122,8 @@ probabilities given the different p. We express this equation in R language as f
 
 R <- likelihood(h,n,p_prime)/likelihood(h,n,p) * (dbeta(p_prime,1,1)/dbeta(p,1,1))  
 
+posterior <- data.frame()  
+
 # Set the lenght of the loop (Marcov Chain, number of iterations).  
 nrep <- 5000  
 # Start the loop (MCMC)  
