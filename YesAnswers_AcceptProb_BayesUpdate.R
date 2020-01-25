@@ -36,6 +36,16 @@ that is often difficult to obtain with more complex models.
 
 Let's stop here a little bit to explain each term of this equation."
 
+sample_yes <- function(){
+  index = trunc(runif(1,1,20))
+  
+  sample <- df$answer[index]
+  if(sample=="YES_THERE_IS_AN_ISSUE")
+    return(1)
+  else
+    return(0)
+}
+
 #Likehood as a binomial function
 likelihood <- function(h, n, p){  
   lh <- dbinom(h, n, p)  
@@ -57,13 +67,14 @@ probabilities given the different p. We express this equation in R language as f
 R <- likelihood(h,n,p_prime)/likelihood(h,n,p) * (dbeta(p_prime,1,1)/dbeta(p,1,1))  
 
 posterior <- data.frame()  
+total_answers <- 20
 
 # Set the length of the loop (Marcov Chain, number of iterations).  
 nrep <- 5000  
 # Start the loop (MCMC)  
 for (i in 1:nrep) {  
   # Obtain a new proposal value for p  
-  p_prime <- p + runif(1, -0.05,0.05)  
+  p_prime <- (p*total_answers + sample_yes()  )/total_answers
   # Avoid values out of the range 0 - 1  
   if (p_prime < 0) {p_prime <- abs(p_prime)}  
   if (p_prime > 1) {p_prime <- 2 - p_prime}  
