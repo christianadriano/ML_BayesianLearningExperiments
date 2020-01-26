@@ -57,8 +57,8 @@ dbeta(p, 1, 1)
 
 # Set the numer of tosses.  
 n <- 20
-# Set the number of heads obtained.  
-h <- 6 
+# Set the number of positive answers.  
+h <- 4 
 
 "Now, the acceptance probability (R, see equations in Step 3) will
 be the minimum value: 1 or the ratio of posterior
@@ -70,15 +70,20 @@ posterior <- data.frame()
 
 accumulated_yess <- 0
 
+p <- 0.3
+
 # Set the length of the loop (Marcov Chain, number of iterations).  
 nrep <- 5000  
 # Start the loop (MCMC)  
 for (i in 1:nrep) {  
+  #accumulated_yess <- accumulated_yess + sample_yes()
+  #n <- trunc( (accumulated_yess/i) * n)
+  #if(n==0) n <- 1
+  # Avoid values out of the range 0 - 1 
+  
   # Obtain a new proposal value for p 
-  accumulated_yess <- accumulated_yess + sample_yes()
-  normalized_yess <- trunc( (accumulated_yess/i) * n)
   p_prime <- p + runif(1, -0.05,0.05)  
-  # Avoid values out of the range 0 - 1  
+  
   if (p_prime < 0) {p_prime <- abs(p_prime)}  
   if (p_prime > 1) {p_prime <- 2 - p_prime}  
   # Compute the acceptance proability using our likelihood function and the  
@@ -94,6 +99,7 @@ for (i in 1:nrep) {
   posterior[i,1] <- log(likelihood(h, n, p))  
   posterior[i,2] <- p  
   print(i)  
+  #print(normalized_yess)
 }  
 
 ###################
