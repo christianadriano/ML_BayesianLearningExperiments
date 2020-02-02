@@ -10,6 +10,13 @@ Query:
 Given a number of answers and the number of YESs (h), 
 what is the probability p of obtaining a YES?
 
+Bayes theorem tells me that my belief in my hypothesis AFTER seeing the data 
+is proportional to how well that hypothesis explains the data times my INITIAL belief.
+
+My hypothesis is the likelihood
+My initial belief is the prior
+
+
 "
 
 library(stringr)
@@ -58,7 +65,9 @@ dbeta(p, 1, 1)
 # Set the numer of tosses.  
 n <- 20
 # Set the number of positive answers.  
-h <- 4 
+h <- 4  #successes
+
+p <- 0.3 #probability  of one success
 
 "Now, the acceptance probability (R, see equations in Step 3) will
 be the minimum value: 1 or the ratio of posterior
@@ -70,7 +79,6 @@ posterior <- data.frame()
 
 accumulated_yess <- 0
 
-p <- 0.3
 
 # Set the length of the loop (Marcov Chain, number of iterations).  
 nrep <- 5000  
