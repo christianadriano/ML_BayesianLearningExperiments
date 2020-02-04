@@ -85,7 +85,9 @@ for(j in 1:6){
   h <- h + sample_yes()
   print(h)
   # Set the length of the loop (Markov Chain, number of iterations).  
-  nrep <- 5000  
+  nrep <- 1000  
+  #set the prior as the previous posterior
+  
   # Start the loop (MCMC)  
   for (i in 1:nrep) {  
     #accumulated_yess <- accumulated_yess + sample_yes()
@@ -118,10 +120,10 @@ for(j in 1:6){
   mean_posterior[j,2] <- sd(posterior[,2])
   
   par(mfrow= c(1,2))  
-  prior <- rbeta(5000, 1,1)  
-  plot(1:5000 ,posterior$V2, cex=0, xlab = "generations", ylab = "p",  
+  prior <- rbeta(1000, 1,1)  
+  plot(1:1000 ,posterior$V2, cex=0, xlab = "generations", ylab = "p",  
        main = "trace of MCMC\n accepted values of parameter p\n prior = beta(1,1) generations = 5000")  
-  lines(1:5000, posterior$V2, cex=0)  
+  lines(1:1000, posterior$V2, cex=0)  
   abline(h=mean(posterior$V2), col="red")  
   plot(density(posterior$V2), xlim = c(min(min(prior),min((posterior$V2))), max(max(prior),max((posterior$V2)))),   
        ylim = c(0, max(max(density(prior)$y),max((density(posterior$V2)$y)))), main= "prior VS posterior\n prior= beta(1,1)",  
