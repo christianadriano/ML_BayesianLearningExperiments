@@ -59,15 +59,17 @@ likelihood <- function(h, n, p){
   lh  
 }  
 
-#prior as a beta function
-dbeta(p, 1, 1)
+
 
 # Set the numer of tosses.  
-n <- 20
+n <- 0
 # Set the number of positive answers.  
-h <- 4  #successes
+h <- 0  #successes
 
-p <- 0.3 #probability  of one success
+p <- 0.33 #probability  of one success
+
+#prior as a beta function
+dbeta(p, 1, 1)
 
 "Now, the acceptance probability (R, see equations in Step 3) will
 be the minimum value: 1 or the ratio of posterior
@@ -75,43 +77,67 @@ probabilities given the different p. We express this equation in R language as f
 
 R <- likelihood(h,n,p_prime)/likelihood(h,n,p) * (dbeta(p_prime,1,1)/dbeta(p,1,1))  
 
-posterior <- data.frame()  
+posterior <- data.frame() 
+mean_posterior <- data.frame()
 
-accumulated_yess <- 0
-
-
-# Set the length of the loop (Marcov Chain, number of iterations).  
-nrep <- 5000  
-# Start the loop (MCMC)  
-for (i in 1:nrep) {  
-  #accumulated_yess <- accumulated_yess + sample_yes()
-  #n <- trunc( (accumulated_yess/i) * n)
-  #if(n==0) n <- 1
-  # Avoid values out of the range 0 - 1 
-  
-  # Obtain a new proposal value for p 
-  p_prime <- p + runif(1, -0.05,0.05)  
-  
-  if (p_prime < 0) {p_prime <- abs(p_prime)}  
-  if (p_prime > 1) {p_prime <- 2 - p_prime}  
-  # Compute the acceptance proability using our likelihood function and the  
-  # beta(1,1) distribution as our prior probability.  
-  R <- likelihood(h,n,p_prime)/likelihood(h,n,p) * (dbeta(p_prime,1,1)/dbeta(p,1,1))  
-  # Accept or reject the new value of p  
-  if (R > 1) {R <- 1}  
-  random <- runif (1,0,1)  
-  if (random < R) {  
-    p <- p_prime  
+for(j in 1:6){
+  n <- n+1
+  h <- h + sample_yes()
+  print(h)
+  # Set the length of the loop (Markov Chain, number of iterations).  
+  nrep <- 5000  
+  # Start the loop (MCMC)  
+  for (i in 1:nrep) {  
+    #accumulated_yess <- accumulated_yess + sample_yes()
+    #n <- trunc( (accumulated_yess/i) * n)
+    #if(n==0) n <- 1
+    # Avoid values out of the range 0 - 1 
+    
+    # Obtain a new proposal value for p 
+    p_prime <- p + runif(1, -0.05,0.05)  
+    
+    if (p_prime < 0) {p_prime <- abs(p_prime)}  
+    if (p_prime > 1) {p_prime <- 2 - p_prime}  
+    # Compute the acceptance proability using our likelihood function and the  
+    # beta(1,1) distribution as our prior probability.  
+    R <- likelihood(h,n,p_prime)/likelihood(h,n,p) * (dbeta(p_prime,1,1)/dbeta(p,1,1))  
+    # Accept or reject the new value of p  
+    if (R > 1) {R <- 1}  
+    random <- runif (1,0,1)  
+    if (random < R) {  
+      p <- p_prime  
+    }  
+    # Store the likelihood of the accepted p and its value  
+    posterior[i,1] <- log(likelihood(h, n, p))  
+    posterior[i,2] <- p  
+    
+    #print(i)  
+    #print(normalized_yess)
   }  
-  # Store the likelihood of the accepted p and its value  
-  posterior[i,1] <- log(likelihood(h, n, p))  
-  posterior[i,2] <- p  
-  print(i)  
-  #print(normalized_yess)
-}  
+  mean_posterior[j,1] <- mean(posterior[,2])
+  mean_posterior[j,2] <- sd(posterior[,2])
+  
+  par(mfrow= c(1,2))  
+  prior <- rbeta(5000, 1,1)  
+  plot(1:5000 ,posterior$V2, cex=0, xlab = "generations", ylab = "p",  
+       main = "trace of MCMC\n accepted values of parameter p\n prior = beta(1,1) generations = 5000")  
+  lines(1:5000, posterior$V2, cex=0)  
+  abline(h=mean(posterior$V2), col="red")  
+  plot(density(posterior$V2), xlim = c(min(min(prior),min((posterior$V2))), max(max(prior),max((posterior$V2)))),   
+       ylim = c(0, max(max(density(prior)$y),max((density(posterior$V2)$y)))), main= "prior VS posterior\n prior= beta(1,1)",  
+       lwd=3, col="red")  
+  lines(density(prior), lwd=3, lty=2, col="blue")  
+  #legend("topleft", legend=c("prior density","posterior density"),  
+   #      col=c("blue","red"), lty=c(3,1), lwd=c(3,3), cex = 1)
+  
+  
+} 
 
 ###################
 # PLOTTING
+
+plot(mean_posterior[,1])
+hist(mean_posterior[,1])
 
 par(mfrow= c(1,2))  
 prior <- rbeta(5000, 1,1)  
