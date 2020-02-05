@@ -63,39 +63,54 @@ sample_yes <- function(){
     return(0)
 }
 
-#Likehood as a binomial function
-likelihood <- function(h, n, p){  
-  lh <- dbinom(h, n, p)  
+"
+Likehood as a binomial function
+dhyper(x, m, n, k, log = FALSE)
+
+x = size of the sample
+nn = number of answers in the
+n = number of black balls in the urn
+m = number of white balls in the urn
+m + n = total balls in the urn
+k = number of balls drawn (sample size)
+p = probability
+"
+likelihood <- function(x_vector_yes_answers, m_total_yes_answers, 
+                       n_total_not_yes_answers, k_sample_size){  
+  
+  lh <- dhyper(x_vector_yes_answers, 
+               m_total_yes_answers, 
+               n_total_not_yes_answers, 
+               k_sample_size)
   lh  
 }  
 
 
 
-# Set the numer of tosses.  
+# Set the numer of answer obtained (it inscreases as we sample more answers)
 n <- 0
+nn <- 20 #total number of answers per question
+
 # Set the number of positive answers.  
-h <- 0  #successes
+total_yes_count <- 0  #successes
 
 p <- 0.33 #probability  of one success
-
-#prior as a beta function
-dbeta(p, 1, 1)
-
-"Now, the acceptance probability (R, see equations in Step 3) will
-be the minimum value: 1 or the ratio of posterior
-probabilities given the different p. We express this equation in R language as follows"
-
-R <- likelihood(h,n,p_prime)/likelihood(h,n,p) * (dbeta(p_prime,1,1)/dbeta(p,1,1))  
 
 posterior <- data.frame() 
 mean_posterior <- data.frame()
 
-for(j in 1:6){
+for(j in 1:20){
   n <- n+1
-  h <- h + sample_yes()
-  print(h)
+  
+  #compute new ones
+  total_yes_count <- total_yes_count + sample_yes()
+  not_yes_count <- abs(nn - total_yes_count)
+  
+  yes_vec <- total_yes_count:total_yes_count
+  print(yes_vec)
+  
   # Set the length of the loop (Markov Chain, number of iterations).  
-  nrep <- 1000  
+  nrep <- 10
   #set the prior as the previous posterior
   
   # Start the loop (MCMC)  
@@ -110,38 +125,53 @@ for(j in 1:6){
     
     if (p_prime < 0) {p_prime <- abs(p_prime)}  
     if (p_prime > 1) {p_prime <- 2 - p_prime}  
-    # Compute the acceptance proability using our likelihood function and the  
+    
+    yes_count <- trunc(p_prime * nn)
+    not_yes_count <- abs(nn - yes_count)
+    old_yes_count <- trunc(p * nn)
+    old_not_yes_count <- abs(nn - old_yes_count)
+    print(paste("yes_count:",yes_count,"not_yes_count:",not_yes_count,
+                "old_yes_count:",old_yes_count,"old_not_yes_count:",old_not_yes_count))
+
+        # Compute the acceptance proability using our likelihood function and the  
     # beta(1,1) distribution as our prior probability.  
-    R <- likelihood(h,n,p_prime)/likelihood(h,n,p) * (dbeta(p_prime,1,1)/dbeta(p,1,1))  
-    # Accept or reject the new value of p  
-    if (R > 1) {R <- 1}  
+    R <- likelihood(yes_vec,yes_count,not_yes_count,1)/likelihood(yes_vec,old_yes_count,old_not_yes_count,1) * (dbeta(p_prime,1,1)/dbeta(p,1,1))  
+    #print(paste0("R= ",R))
+     # Accept or reject the new value of p  
+    if (is.na(R) | R > 1) {R <- 1}  
     random <- runif (1,0,1)  
     if (random < R) {  
-      p <- p_prime  
-    }  
-    # Store the likelihood of the accepted p and its value  
-    posterior[i,1] <- log(likelihood(h, n, p))  
+      p <- p_prime;  
+      # Store the likelihood of the accepted p and its value
+      posterior[i,1] <- log(likelihood(yes_vec,yes_count,not_yes_count,1));
+    } 
+    else{posterior[i,1] <- log(likelihood(yes_vec,old_yes_count,old_not_yes_count,1))}
+      
     posterior[i,2] <- p  
+    
+    
     
     #print(i)  
     #print(normalized_yess)
   }  
   mean_posterior[j,1] <- mean(posterior[,2])
   mean_posterior[j,2] <- sd(posterior[,2])
+  #
+ # plot(mean_posterior[,1])
   
-  par(mfrow= c(1,2))  
-  prior <- rbeta(1000, 1,1)  
-  plot(1:1000 ,posterior$V2, cex=0, xlab = "generations", ylab = "p",  
-       main = "trace of MCMC\n accepted values of parameter p\n prior = beta(1,1) generations = 5000")  
-  lines(1:1000, posterior$V2, cex=0)  
-  abline(h=mean(posterior$V2), col="red")  
-  plot(density(posterior$V2), xlim = c(min(min(prior),min((posterior$V2))), max(max(prior),max((posterior$V2)))),   
-       ylim = c(0, max(max(density(prior)$y),max((density(posterior$V2)$y)))), main= "prior VS posterior\n prior= beta(1,1)",  
-       lwd=3, col="red")  
-  lines(density(prior), lwd=3, lty=2, col="blue")  
-  #legend("topleft", legend=c("prior density","posterior density"),  
-   #      col=c("blue","red"), lty=c(3,1), lwd=c(3,3), cex = 1)
-  
+   par(mfrow= c(1,2))
+   prior <- rbeta(nrep, 1,1)
+   plot(1:nrep ,posterior$V2, cex=0, xlab = "generations", ylab = "p",
+        main = "trace of MCMC\n accepted values of parameter p\n prior = beta(1,1) generations = 5000")
+   lines(1:nrep, posterior$V2, cex=0)
+   abline(h=mean(posterior$V2), col="red")
+   plot(density(posterior$V2), xlim = c(min(min(prior),min((posterior$V2))), max(max(prior),max((posterior$V2)))),
+        ylim = c(0, max(max(density(prior)$y),max((density(posterior$V2)$y)))), main= "prior VS posterior\n prior= beta(1,1)",
+        lwd=3, col="red")
+   lines(density(prior), lwd=3, lty=2, col="blue")
+  # #legend("topleft", legend=c("prior density","posterior density"),
+  #  #      col=c("blue","red"), lty=c(3,1), lwd=c(3,3), cex = 1)
+
   
 } 
 
