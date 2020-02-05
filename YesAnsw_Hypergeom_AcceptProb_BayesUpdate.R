@@ -56,6 +56,7 @@ sample_yes <- function(){
   index = trunc(runif(1,1,20))
   
   sample <- df$answer[index]
+  df <- df[-c(index),]
   if(sample=="YES_THERE_IS_AN_ISSUE")
     return(1)
   else
