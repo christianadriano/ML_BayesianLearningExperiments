@@ -52,7 +52,7 @@ Let's stop here a little bit to explain each term of this equation."
 
 #Since it is sampling without replacement, 
 #I need to remove the answer from the list
-sample_yes <- function(){
+sample_without_replacement <- function(){
   index = trunc(runif(1,1,20))
   
   sample <- df$answer[index]
@@ -103,7 +103,7 @@ for(j in 1:20){
   n <- n+1
   
   #compute new ones
-  total_yes_count <- total_yes_count + sample_yes()
+  total_yes_count <- total_yes_count + sample_without_replacement()
   not_yes_count <- abs(nn - total_yes_count)
   
   yes_vec <- total_yes_count:total_yes_count
@@ -115,7 +115,7 @@ for(j in 1:20){
   
   # Start the loop (MCMC)  
   for (i in 1:nrep) {  
-    #accumulated_yess <- accumulated_yess + sample_yes()
+    #accumulated_yess <- accumulated_yess + sample_without_replacement()
     #n <- trunc( (accumulated_yess/i) * n)
     #if(n==0) n <- 1
     # Avoid values out of the range 0 - 1 
