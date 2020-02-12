@@ -43,25 +43,32 @@ sample_without_replacement <- function(sample_size){
 phyper gives the cumulative probability upto and including my observation,
 e.g.,P(observing 3 or less yes's) 
 dhyper gives me exactly the probability of P(Observing 3 yes's)
+x = the exact number of yes's that I am interested in
 successes = how many white balls in the urn
 fails = how many red balls in the urn
 sample_size = how many balls to draw
 "
-initialize_likelihood_functions <- function(successes, unsuccesses, sample_size){
-  x <- 0:(sample_size+1)
-  return (dhyper(x,successes,answer_set-succcesses, sample_size))
+initialize_likelihood_functions <- function(x,successes, unsuccesses, sample_size){
+  return(dhyper(x,successes,unsuccesses, sample_size)[1])
 }
 
 sample_size=1 #how many answers to sample at each cycle
-i=1
+number_Yes=1
+likelihood_matrix <- matrix(NA,2,21)
+#computes the likelihood for each hypothesis (total_yes for a question)
+for(total_yes in 0:20){
+  likelihood_matrix[1,total_yes+1] <- paste0("H",total_yes)
+  likelihood_matrix[2,total_yes+1] <-initialize_likelihood_functions(number_Yes,total_yes,20-total_yes,sample_size) 
+}
 
+likelihood_df <- data.frame(likelihood_matrix)
+colnames(likelihood_df) <- likelihood_matrix[1,]
 for(i in 1:6){
   n <- n+1
   h <- h + sample_without_replacement(sample_size)
   print(h)
   
   hypotheses_vec <- 
-  likelihood_vec <- 
     
   #computes the likelihood for each hypothesis
   for(m in 0:20){
