@@ -26,14 +26,15 @@ df <- df_E2[df_E2$microtask_id==task_id,]
 #Since it is sampling without replacement, 
 #I need to remove the answer from the list
 sample_without_replacement <- function(sample_size){
-  index = trunc(runif(1,1,20))
-  
-  sample <- df$answer[index]
-  df <- df[-c(index),]
-  if(sample=="YES_THERE_IS_AN_ISSUE")
-    return(1)
-  else
-    return(0)
+  yes_answers=0
+  for(n in 1:sample_size){
+    index = trunc(runif(1,1,length(df$answer)))
+    sample <- df$answer[index]
+    df <- df[-c(index),] #remove answer from the list
+    if(sample=="YES_THERE_IS_AN_ISSUE")
+      yes_answers = yes_answers + 1;
+  }
+  return(yes_answers)
 }
 
 #Produces a likelihood function using the hypergeometric distribution
@@ -58,13 +59,14 @@ likelihood_matrix <- matrix(NA,2,21)
 #computes the likelihood for each hypothesis (total_yes for a question)
 for(total_yes in 0:20){
   likelihood_matrix[1,total_yes+1] <- paste0("H",total_yes)
-  likelihood_matrix[2,total_yes+1] <-initialize_likelihood_functions(number_Yes,total_yes,20-total_yes,sample_size) 
+  likelihood_matrix[2,total_yes+1] <-initialize_likelihood_functions(number_Yes,
+                                                                     total_yes,
+                                                                     20-total_yes,sample_size) 
 }
 
 likelihood_df <- data.frame(likelihood_matrix)
 colnames(likelihood_df) <- likelihood_matrix[1,]
-for(i in 1:6){
-  n <- n+1
+for(i in 1:6){ #do 6 cycles of answering
   h <- h + sample_without_replacement(sample_size)
   print(h)
   
