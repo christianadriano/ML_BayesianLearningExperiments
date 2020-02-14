@@ -49,7 +49,7 @@ successes = how many white balls in the urn
 fails = how many red balls in the urn
 sample_size = how many balls to draw
 "
-initialize_likelihood_functions <- function(x,successes, unsuccesses, sample_size){
+compute_likelihood_functions <- function(x,successes, unsuccesses, sample_size){
   return(dhyper(x,successes,unsuccesses, sample_size)[1])
 }
 
@@ -64,19 +64,27 @@ for(total_yes in 0:20){
                                                                      20-total_yes,sample_size) 
 }
 
-likelihood_df <- data.frame(likelihood_matrix)
-colnames(likelihood_df) <- likelihood_matrix[1,]
+likelihood_df <- data.frame(likelihood_matrix);
+colnames(likelihood_df) <- likelihood_matrix[1,];
+
+
+prior_vec = matrix()
+yes_count <- 0;
 for(i in 1:6){ #do 6 cycles of answering
-  h <- h + sample_without_replacement(sample_size)
-  print(h)
+  yes_count <- yes_count + sample_without_replacement(sample_size)
   
-  hypotheses_vec <- 
-    
   #computes the likelihood for each hypothesis
-  for(m in 0:20){
-    likelihood_vec[m] <-compute_likelihood(m,20-m,sample_size) 
-    
+  for(hypothesis in 0:20){
+    likelihood_vec[hypothesis+1] <-compute_likelihood(yes_count,hypothesis,20-hypothesis,sample_size) 
   }
   
+  #multiply by the likelihoods and prior
+  posterior_vec = likelihood_vec * prior_vec
+  
+  #normalize posterior
+  posterior_vec <- posterior_vec / sum(posterior_vec)
+  
+  #posterior becomes next prior
+  prior_vec <- posterior_vec 
   
 }
