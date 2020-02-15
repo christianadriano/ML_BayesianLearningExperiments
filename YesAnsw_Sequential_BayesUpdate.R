@@ -67,12 +67,12 @@ for(total_yes in 0:20){
 likelihood_df <- data.frame(likelihood_matrix);
 colnames(likelihood_df) <- likelihood_matrix[1,];
 
-posterior_matrix <- matrix(nrow = 6, ncol = 21)
+posterior_matrix <- matrix(nrow = 21, ncol = 20)
 
 likelihood_vec <- matrix(rep(NA, 21),1, 21)
 prior_vec = matrix(rep(1/20, 21),1, 21)
 yes_count <- 0;
-for(i in 1:6){ #do 6 cycles of answering
+for(i in 1:20){ #do 6 cycles of answering
   yes_count <- yes_count + sample_without_replacement(sample_size)
   
   #computes the likelihood for each hypothesis
@@ -88,6 +88,8 @@ for(i in 1:6){ #do 6 cycles of answering
   
   #posterior becomes next prior
   prior_vec <- posterior_vec 
-  posterior_matrix[i,] <- posterior_vec
+  posterior_matrix[,i] <- posterior_vec
 }
 
+matplot(posterior_matrix, type = c("b"),pch=1,col = 1:20) #plot
+legend("topleft", legend = 1:20, col=1:20, pch=1) # optional legend
