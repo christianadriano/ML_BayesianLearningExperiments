@@ -68,7 +68,7 @@ likelihood_df <- data.frame(likelihood_matrix);
 colnames(likelihood_df) <- likelihood_matrix[1,];
 
 
-prior_vec = matrix()
+prior_vec = matrix(rep(1/20, 20),1, 20)
 yes_count <- 0;
 for(i in 1:6){ #do 6 cycles of answering
   yes_count <- yes_count + sample_without_replacement(sample_size)
