@@ -72,12 +72,14 @@ posterior_matrix <- matrix(nrow = 21, ncol = 20)
 likelihood_vec <- matrix(rep(NA, 21),1, 21)
 prior_vec = matrix(rep(1/20, 21),1, 21)
 yes_count <- 0;
-for(i in 1:20){ #do 6 cycles of answering
+for(i in 1:20){ #cycles of answering
   yes_count <- yes_count + sample_without_replacement(sample_size)
   
   #computes the likelihood for each hypothesis
   for(hypothesis in 0:20){
-    likelihood_vec[hypothesis+1] <-compute_likelihood(yes_count,hypothesis,20-hypothesis,yes_count) 
+    likelihood_vec[hypothesis+1] <-compute_likelihood(yes_count,
+                                                      hypothesis,20-hypothesis,
+                                                      i) 
   }
   
   #multiply by the likelihoods and prior
@@ -91,5 +93,21 @@ for(i in 1:20){ #do 6 cycles of answering
   posterior_matrix[,i] <- posterior_vec
 }
 
-matplot(posterior_matrix, type = c("b"),pch=1,col = 1:20) #plot
-legend("topleft", legend = 1:20, col=1:20, pch=1) # optional legend
+matplot(posterior_matrix[,1:10], type = c("b"),pch=1,col = 1:10) #plot
+legend("topleft", legend = 1:10, col=1:10, pch=1) # optional legend
+
+matplot(posterior_matrix[,11:15], type = c("b"),pch=1,col = 1:5) #plot
+legend("topleft", legend = 1:5, col=1:5, pch=1) # optional legend
+
+matplot(posterior_matrix[,15:20], type = c("b"),pch=1,col = 1:6) #plot
+legend("topleft", legend = 1:6, col=1:6, pch=1) # optional legend
+
+
+matplot(posterior_matrix[,1:20], type = c("b"),pch=1,col = 1:20,
+        xlab="Hypothesis on the number of Yes's", 
+        ylab ="Probability of the hypothesis"
+      ) #plot
+
+legend("topleft", fill = 1:20, ncol = 5,
+       cex = 0.75, legend = 1:20, col=1:20, pch=1) # optional legend
+title("Posterior updated after 20 cycles of answers")
