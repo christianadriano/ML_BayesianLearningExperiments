@@ -20,9 +20,6 @@ path <- "C://Users//Christian//Documents//GitHub//Complexity_Metrics//output//"
 dataset_E2 <- read.csv(str_c(path, "merged_tasks_complexity_E2.csv"))
 df_E2 <- data.frame(dataset_E2)
 
-task_id = 1
-df <- df_E2[df_E2$microtask_id==task_id,]
-
 #Since it is sampling without replacement, 
 #I need to remove the answer from the list
 sample_without_replacement <- function(sample_size){
@@ -67,31 +64,55 @@ for(total_yes in 0:20){
 likelihood_df <- data.frame(likelihood_matrix);
 colnames(likelihood_df) <- likelihood_matrix[1,];
 
-posterior_matrix <- matrix(nrow = 21, ncol = 20)
-
-likelihood_vec <- matrix(rep(NA, 21),1, 21)
-prior_vec = matrix(rep(1/20, 21),1, 21)
-yes_count <- 0;
-for(i in 1:20){ #cycles of answering
-  yes_count <- yes_count + sample_without_replacement(sample_size)
+"Compute the posterior for one question"
+compute_posterior <- function(df_question){
   
-  #computes the likelihood for each hypothesis
-  for(hypothesis in 0:20){
-    likelihood_vec[hypothesis+1] <-compute_likelihood(yes_count,
-                                                      hypothesis,20-hypothesis,
-                                                      i) 
+  posterior_matrix <- matrix(nrow = 21, ncol = 20)
+  likelihood_vec <- matrix(rep(NA, 21),1, 21)
+  prior_vec = matrix(rep(1/20, 21),1, 21)
+  yes_count <- 0;
+  for(i in 1:20){ #cycles of answering
+    yes_count <- yes_count + sample_without_replacement(sample_size)
+    
+    #computes the likelihood for each hypothesis
+    for(hypothesis in 0:20){
+      likelihood_vec[hypothesis+1] <-compute_likelihood(yes_count,
+                                                        hypothesis,20-hypothesis,
+                                                        i) 
+    }
+    
+    #multiply by the likelihoods and prior
+    posterior_vec = likelihood_vec * prior_vec
+    
+    #normalize posterior
+    posterior_vec <- posterior_vec / sum(posterior_vec)
+    
+    #posterior becomes next prior
+    prior_vec <- posterior_vec 
+    posterior_matrix[,i] <- posterior_vec
   }
-  
-  #multiply by the likelihoods and prior
-  posterior_vec = likelihood_vec * prior_vec
-  
-  #normalize posterior
-  posterior_vec <- posterior_vec / sum(posterior_vec)
-  
-  #posterior becomes next prior
-  prior_vec <- posterior_vec 
-  posterior_matrix[,i] <- posterior_vec
 }
+
+
+
+"Compute the posterior for all questions within a method"
+compute_for_all_questions
+java_methods = c("HIT01_8") #,"HIT02_4")
+start_task = 1
+end_task = 10
+df_posterior_instances <- data.frame()
+hypotheses_labels <- create_labels()
+colnames(df_posterior_instances) <- c("")
+for(method in java_methods){
+  df <- df_E2[df_E2$file_name == method,]
+  for(task_id in start_task:end_task){
+  df_question <- df_E2[df_E2$microtask_id == task_id,]
+  posterior_matrix <- compute_posterior(df_question)
+  #still needs to same this into a dataframe that will be written into file
+  
+  }
+}
+
 
 matplot(posterior_matrix[,1:10], type = c("b"),pch=1,col = 1:10) #plot
 legend("topleft", legend = 1:10, col=1:10, pch=1) # optional legend
