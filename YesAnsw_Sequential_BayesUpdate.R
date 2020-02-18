@@ -117,7 +117,7 @@ copy_posterior_matrix <- function(df_posterior,posterior_matrix,
     
     row_index <- row_index+1;
   }
-  return(df_posterior_instances)
+  return(df_posterior)
 }
 
 
@@ -138,9 +138,14 @@ compute_for_all_questions <- function(){
   }
   return(df_posterior_instances)
 }
-
+---------------
+#MAIN
+df_posterior_instances <- compute_for_all_questions()
 writewrite.csv(df_posterior_instances,".\output\E2_posterior_instances.csv", 
                row.names = TRUE)
+
+#---------------------------------------------------
+#PLOTTING
 
 matplot(posterior_matrix[,1:10], type = c("b"),pch=1,col = 1:10) #plot
 legend("topleft", legend = 1:10, col=1:10, pch=1) # optional legend
