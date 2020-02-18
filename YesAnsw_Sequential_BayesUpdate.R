@@ -94,7 +94,7 @@ compute_posterior <- function(df_question){
 }
 
 "Redo this using regular expression"
-compute_labels <- function(){
+create_labels <- function(){
   labels_vec <- vector("list", 21)
   for(i in 0:20) {
     labels_vec[i+1] <- paste0("H",i)
