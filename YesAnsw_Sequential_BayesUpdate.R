@@ -133,12 +133,14 @@ compute_for_all_questions <- function(){
     for(task_id in start_task:end_task){
       df_question <- df_E2[df_E2$microtask_id == task_id,]
       posterior_matrix <- compute_posterior(df_question)
-      #still needs to same this into a dataframe that will be written into file
       df_posterior_instances <- copy_posterior_matrix(posterior_matrix)
     }
   }
-  
+  return(df_posterior_instances)
 }
+
+writewrite.csv(df_posterior_instances,".\output\E2_posterior_instances.csv", 
+               row.names = TRUE)
 
 matplot(posterior_matrix[,1:10], type = c("b"),pch=1,col = 1:10) #plot
 legend("topleft", legend = 1:10, col=1:10, pch=1) # optional legend
