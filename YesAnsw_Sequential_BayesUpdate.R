@@ -69,7 +69,6 @@ colnames(likelihood_df) <- likelihood_matrix[1,];
 #---------------------------------
 #Compute the posterior for one question
 compute_posterior <- function(df_question){
-  
   posterior_matrix <- matrix(nrow = 21, ncol = 20)
   likelihood_vec <- matrix(rep(NA, 21),1, 21)
   prior_vec = matrix(rep(1/20, 21),1, 21)
@@ -130,15 +129,18 @@ compute_for_all_questions <- function(){
   java_methods = c("HIT01_8") #,"HIT02_4")
   start_task = 1
   end_task = 10
-  df_posterior_instances <- data.frame()
+  df_posterior_instances <- data.frame(matrix(nrow = 1,ncol = 24))
   colnames(df_posterior_instances) <- c("file_name","task_id",create_labels())
   for(method in java_methods){
     df <- df_E2[df_E2$file_name == method,]
     for(task_id in start_task:end_task){
-      df_question <- df_E2[df_E2$microtask_id == task_id,]
-      posterior_matrix <- compute_posterior(df_question)
-      df_posterior_instances <- copy_posterior_matrix(posterior_matrix)
+      df_question <- df[df$microtask_id == task_id,];
+      posterior_matrix <- compute_posterior(df_question);
+      df_posterior_instances <- copy_posterior_matrix(df_posterior_instances,
+                                                        posterior_matrix, 
+                                                        file_name,task_id);
     }
+    
   }
   return(df_posterior_instances)
 }
