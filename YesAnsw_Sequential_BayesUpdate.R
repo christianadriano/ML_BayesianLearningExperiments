@@ -114,7 +114,7 @@ copy_posterior_matrix <- function(df_posterior,posterior_matrix,
 
   for(i in 1:20){#traverses all columns of the matrix
     for(j in 1:21){#traverses all lines of the matrix
-      browser()
+      #browser()
       df_posterior[row_index,j+2] <- posterior_matrix[j,i]
     }
     df_posterior[row_index,"file_name"] <- file_name
@@ -141,7 +141,7 @@ compute_for_all_questions <- function(){
       posterior_matrix <- compute_posterior(df_question,sample_size);
       df_posterior_instances <- copy_posterior_matrix(df_posterior_instances,
                                                         posterior_matrix, 
-                                                        file_name,task_id);
+                                                        method,task_id);
     }
     
   }
@@ -150,7 +150,8 @@ compute_for_all_questions <- function(){
 ---------------
 #MAIN
 df_posterior_instances <- compute_for_all_questions()
-writewrite.csv(df_posterior_instances,".\output\E2_posterior_instances.csv", 
+
+write.csv(df_posterior_instances,str_c("C://Users//Christian//Documents//GitHub//ML_BayesianLearningExperiments//output//", "E2_posterior_instances.csv"), 
                row.names = TRUE)
 
 #---------------------------------------------------
