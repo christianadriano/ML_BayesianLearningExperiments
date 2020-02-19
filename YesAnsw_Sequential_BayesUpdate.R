@@ -22,12 +22,12 @@ df_E2 <- data.frame(dataset_E2)
 
 #Since it is sampling without replacement, 
 #I need to remove the answer from the list
-sample_without_replacement <- function(sample_size){
+sample_without_replacement <- function(df_question,sample_size){
   yes_answers=0
   for(n in 1:sample_size){
-    index = trunc(runif(1,1,length(df$answer)))
-    sample <- df$answer[index]
-    df <- df[-c(index),] #remove answer from the list
+    index = trunc(runif(1,1,length(df_question$answer)))
+    sample <- df_question$answer[index]
+    df_question <- df_question[-c(index),] #remove answer from the list
     if(sample=="YES_THERE_IS_AN_ISSUE")
       yes_answers = yes_answers + 1;
   }
@@ -68,13 +68,13 @@ colnames(likelihood_df) <- likelihood_matrix[1,];
 
 #---------------------------------
 #Compute the posterior for one question
-compute_posterior <- function(df_question){
+compute_posterior <- function(df_question,sample_size){
   posterior_matrix <- matrix(nrow = 21, ncol = 20)
   likelihood_vec <- matrix(rep(NA, 21),1, 21)
   prior_vec = matrix(rep(1/20, 21),1, 21)
   yes_count <- 0;
   for(i in 1:20){ #cycles of answering
-    yes_count <- yes_count + sample_without_replacement(sample_size)
+    yes_count <- yes_count + sample_without_replacement(df_question,sample_size)
     
     #computes the likelihood for each hypothesis
     for(hypothesis in 0:20){
@@ -93,6 +93,7 @@ compute_posterior <- function(df_question){
     prior_vec <- posterior_vec 
     posterior_matrix[,i] <- posterior_vec
   }
+  return(posterior_matrix)
 }
 
 #------------------------
@@ -109,10 +110,11 @@ create_labels <- function(){
 "Copy new set of posterior probabilities of a task"
 copy_posterior_matrix <- function(df_posterior,posterior_matrix, 
                                   file_name,task_id){
-  row_index <- length(df_posterior)
+  row_index <- dim(df_posterior)[1]
 
   for(i in 1:20){#traverses all columns of the matrix
     for(j in 1:21){#traverses all lines of the matrix
+      browser()
       df_posterior[row_index,j+2] <- posterior_matrix[j,i]
     }
     df_posterior[row_index,"file_name"] <- file_name
@@ -129,13 +131,14 @@ compute_for_all_questions <- function(){
   java_methods = c("HIT01_8") #,"HIT02_4")
   start_task = 1
   end_task = 10
+  sample_size=1
   df_posterior_instances <- data.frame(matrix(nrow = 1,ncol = 24))
   colnames(df_posterior_instances) <- c("file_name","task_id",create_labels())
   for(method in java_methods){
     df <- df_E2[df_E2$file_name == method,]
     for(task_id in start_task:end_task){
       df_question <- df[df$microtask_id == task_id,];
-      posterior_matrix <- compute_posterior(df_question);
+      posterior_matrix <- compute_posterior(df_question,sample_size);
       df_posterior_instances <- copy_posterior_matrix(df_posterior_instances,
                                                         posterior_matrix, 
                                                         file_name,task_id);
