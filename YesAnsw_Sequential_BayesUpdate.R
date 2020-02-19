@@ -34,9 +34,8 @@ sample_without_replacement <- function(sample_size){
   return(yes_answers)
 }
 
+#-------------------
 #Produces a likelihood function using the hypergeometric distribution
-#
-
 "Choices of hypergeometric functions
 phyper gives the cumulative probability upto and including my observation,
 e.g.,P(observing 3 or less yes's) 
@@ -50,21 +49,25 @@ compute_likelihood <- function(x,successes, unsuccesses, sample_size){
   return(dhyper(x,successes,unsuccesses, sample_size)[1])
 }
 
+#--
+# Testing the likelihood function
 sample_size=1 #how many answers to sample at each cycle
 number_Yes=1
 likelihood_matrix <- matrix(NA,2,21)
 #computes the likelihood for each hypothesis (total_yes for a question)
 for(total_yes in 0:20){
   likelihood_matrix[1,total_yes+1] <- paste0("H",total_yes)
-  likelihood_matrix[2,total_yes+1] <-initialize_likelihood_functions(number_Yes,
+  likelihood_matrix[2,total_yes+1] <- initialize_likelihood_functions(number_Yes,
                                                                      total_yes,
                                                                      20-total_yes,sample_size) 
 }
+#--------------------------------
 
 likelihood_df <- data.frame(likelihood_matrix);
 colnames(likelihood_df) <- likelihood_matrix[1,];
 
-"Compute the posterior for one question"
+#---------------------------------
+#Compute the posterior for one question
 compute_posterior <- function(df_question){
   
   posterior_matrix <- matrix(nrow = 21, ncol = 20)
@@ -81,10 +84,10 @@ compute_posterior <- function(df_question){
                                                         i) 
     }
     
-    #multiply by the likelihoods and prior
+    #multiply by the likelihoods and the prior
     posterior_vec = likelihood_vec * prior_vec
     
-    #normalize posterior
+    #normalize the posterior so it ranges from 0 to 1
     posterior_vec <- posterior_vec / sum(posterior_vec)
     
     #posterior becomes next prior
@@ -93,6 +96,7 @@ compute_posterior <- function(df_question){
   }
 }
 
+#------------------------
 "Redo this using regular expression"
 create_labels <- function(){
   labels_vec <- vector("list", 21)
@@ -102,7 +106,7 @@ create_labels <- function(){
   return(labels_vec);
 }
 
-
+#-------------------------
 "Copy new set of posterior probabilities of a task"
 copy_posterior_matrix <- function(df_posterior,posterior_matrix, 
                                   file_name,task_id){
@@ -120,7 +124,7 @@ copy_posterior_matrix <- function(df_posterior,posterior_matrix,
   return(df_posterior)
 }
 
-
+#-------------------------
 "Compute the posterior for all questions within a method"
 compute_for_all_questions <- function(){
   java_methods = c("HIT01_8") #,"HIT02_4")
