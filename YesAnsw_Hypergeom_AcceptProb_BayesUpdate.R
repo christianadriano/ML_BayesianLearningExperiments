@@ -82,7 +82,7 @@ likelihood <- function(x_vector_yes_answers, m_total_yes_answers,
                m_total_yes_answers, 
                n_total_not_yes_answers, 
                k_sample_size)
-  lh  
+  return(lh)
 }  
 
 
