@@ -23,3 +23,14 @@ entropy(y, method="shrink")
 
 "Except for method=MM and CS, all the other methods
 produced similar results for entropy."
+
+#-----------------------------
+#Dirichlet Prior Bayesian Estimators of Entropy
+
+# Dirichlet estimate with a=1/2 (Jeffreys'prior)
+entropy.Dirichlet(y, a=1/2)
+
+# Dirichlet estimate with a=1 (Laplace prior)
+entropy.Dirichlet(y, a=1)
+
+"Also produced similar results to the Jeffrey's and Laplace method"
