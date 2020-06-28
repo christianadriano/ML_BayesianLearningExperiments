@@ -2,6 +2,8 @@
 Simulate Bayesian Gaussian updating
 "
 library(stringr)
+library(tidyverse)
+library(gridExtra)
 
 source(".//util//Multiplot.R")
 
@@ -50,33 +52,56 @@ collected_rewards <- vector("list",episodes) #creates empty list of size "episod
 previous_mean <- 0
 previous_variance <- 0
 
-plot_list <- vector("list",4)
+#plot configurations
+updates <- 2
+myplots_list <- list(); #vector('list',updates)
+plot_colors=sample(LETTERS[1:updates], 100, replace=TRUE)
+posterior_matrix <- matrix(data=NA,nrow = episodes,ncol = updates)
 
-for (i in 1:4){
+for (i in 1:updates){
   #sample one reward with replacement
   sampled_index <- sample(1:max_index, 1) #sample one integer 
-  #collected_rewards[i] <- reward_list[sampled_index] 
+  collected_rewards[i] <- reward_list[sampled_index] 
   
   #TODO replace this for the incremental mean and incremental variance
-  mean_reward <- mean(collected_rewards[[1:i]])
+  mean_reward <- mean(unlist(collected_rewards[1:i]))
   if(i < 2){
     sd_reward <- 1;
   } else {
-    sd_reward <- sd(collected_rewards[[1:i]]);
+    sd_reward <- sd(unlist(collected_rewards[1:i]));
   }
 
   reward_likelihood <- rnorm(100, mean=mean_reward, sd=sd_reward) 
   #plot(density(reward_likelihood))
   
   posterior <- reward_likelihood * prior
-  plot(density(posterior))
-  
+  posterior_matrix[,i] <- posterior
   #update the prior
   prior <-  posterior
-  plot_list[i] <- posterior
+  
+  #plot
+  plot(density(posterior), main=str_c("Posterior, iteration=",i))
 }
 
-multiplot(plot_list[1],plot_list[2],plot_list[3],plot_list[4],cols=2)
+#TODO multiplot with density using ggplot and different colors
+
+df <- data.frame(data=posterior_matrix)
+colnames(df) <- 
+
+plot_data_column = function (data, column,plot_colors) {
+    ggplot(data, aes_string(x=column, fill=plot_colors)) + 
+    geom_density(alpha=0.5) +
+    xlab(column)
+}
+
+
+myplots_list[[i]] <- local({
+  i <- i
+  p1 <-plot(density(posterior), main=str_c("Posterior, iteration=",i))
+  print(p1)
+})
+
+multiplot(plotlist=myplots_list,cols=1)
 
 x <- rbeta(n=500, shape1=2, shape2=2)
 est.par <- eBeta(x);
