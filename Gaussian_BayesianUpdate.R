@@ -43,7 +43,7 @@ see: https://stats.stackexchange.com/questions/297901/choosing-between-uninforma
 prior_mean_reward <- rbeta(n=episodes,shape1=1,shape2=1)
 mean(prior_mean_reward)
 var(prior_mean_reward)
-plot(density(prior_mean_reward))
+#plot(density(prior_mean_reward))
 
 prior <- prior_mean_reward
 
@@ -53,10 +53,11 @@ previous_mean <- 0
 previous_variance <- 0
 
 #plot configurations
-updates <- 2
+updates <- 8
 myplots_list <- list(); #vector('list',updates)
 plot_colors=sample(LETTERS[1:updates], 100, replace=TRUE)
 posterior_matrix <- matrix(data=NA,nrow = episodes,ncol = updates)
+par(mfrow=c(2,4))
 
 for (i in 1:updates){
   #sample one reward with replacement
@@ -80,7 +81,8 @@ for (i in 1:updates){
   prior <-  posterior
   
   #plot
-  plot(density(posterior), main=str_c("Posterior, iteration=",i))
+  plot(density(posterior), main=str_c("Iter=",i))
+ # par(new=TRUE)
 }
 
 #TODO multiplot with density using ggplot and different colors
