@@ -18,7 +18,7 @@ For non-stationary the samples will be without-replacement and will follow the t
 " 
 
 #Normalized rewards
-#TODO how to work with non-normalized and non-scaled
+#TODO how to work with non-normalized and non-scaled?
 reward_list <- c(1, 0, 0.5, 0.6, 0.7, 0.5, 0.4, 0.3, 0.3, 0.5, 0.4)
 plot(reward_list)
 true_mean_rewards <- mean(reward_list)
@@ -30,8 +30,6 @@ true_mean_variance <- var(reward_list)
 ###PRIOR FOR PROBABILITY FOR REWARDS###
 
 ##Choosing a prior##
-
-TODO
 If we have a few data points from the rewards, we can use them to choose a prior that is
 better than the uninformative prior.
 Look at https://a-little-book-of-r-for-bayesian-statistics.readthedocs.io/en/latest/src/bayesianstats.html
@@ -64,7 +62,8 @@ for (i in 1:updates){
   sampled_index <- sample(1:max_index, 1) #sample one integer 
   collected_rewards[i] <- reward_list[sampled_index] 
   
-  #TODO replace this for the incremental mean and incremental variance
+  #TODO improve this code by using incremental mean and incremental variance
+  #So we do not keep track of all datapoints.
   mean_reward <- mean(unlist(collected_rewards[1:i]))
   if(i < 2){
     sd_reward <- 1;
@@ -85,10 +84,12 @@ for (i in 1:updates){
  # par(new=TRUE)
 }
 
+#-------------------------------------------------------------
+#Better Plots
 #TODO multiplot with density using ggplot and different colors
 
 df <- data.frame(data=posterior_matrix)
-colnames(df) <- 
+#colnames(df) <- 
 
 plot_data_column = function (data, column,plot_colors) {
     ggplot(data, aes_string(x=column, fill=plot_colors)) + 
@@ -105,7 +106,4 @@ myplots_list[[i]] <- local({
 
 multiplot(plotlist=myplots_list,cols=1)
 
-x <- rbeta(n=500, shape1=2, shape2=2)
-est.par <- eBeta(x);
-est.par
-plot(est.par)
+
