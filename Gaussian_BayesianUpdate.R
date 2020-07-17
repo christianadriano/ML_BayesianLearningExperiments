@@ -60,14 +60,18 @@ par(mfrow=c(2,4))
 for (i in 1:updates){
   #sample one reward with replacement
   sampled_index <- sample(1:max_index, 1) #sample one integer 
-  collected_rewards[i] <- reward_list[sampled_index] 
+  sampled_reward <- reward_list[sampled_index] 
+  collected_rewards[i] <- sampled_reward
   
   #TODO improve this code by using incremental mean and incremental variance
   #So we do not keep track of all datapoints.
-  mean_reward <- mean(unlist(collected_rewards[1:i]))
-  if(i < 2){
+  #mean_reward <- mean(unlist(collected_rewards[1:i]))
+  
+  if(i == 1){ #First round
+    mean_reward <- sampled_reward
     sd_reward <- 1;
   } else {
+    mean_reward <- (mean_reward *(i-1) + sampled_reward)/i
     sd_reward <- sd(unlist(collected_rewards[1:i]));
   }
 
