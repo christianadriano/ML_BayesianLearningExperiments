@@ -26,6 +26,12 @@ true_mean_variance <- var(reward_list)
 
 #---------------------------
 
+incremental_variance <- function(n,x,mean, current_variance){
+  
+  variance_new <- ((n-2)/(n-1)) *current_variance + ((x-mean)^2)/n
+  return(variance_new)
+}
+
 "
 ###PRIOR FOR PROBABILITY FOR REWARDS###
 
@@ -61,18 +67,18 @@ for (i in 1:updates){
   #sample one reward with replacement
   sampled_index <- sample(1:max_index, 1) #sample one integer 
   sampled_reward <- reward_list[sampled_index] 
-  collected_rewards[i] <- sampled_reward
-  
-  #TODO improve this code by using incremental mean and incremental variance
+
+  #This code by using incremental mean and incremental variance
   #So we do not keep track of all datapoints.
-  #mean_reward <- mean(unlist(collected_rewards[1:i]))
-  
+
+  old_mean_reward <- mean_reward
+  old_variance <- sd_reward^2
   if(i == 1){ #First round
     mean_reward <- sampled_reward
     sd_reward <- 1;
   } else {
-    mean_reward <- (mean_reward *(i-1) + sampled_reward)/i
-    sd_reward <- sd(unlist(collected_rewards[1:i]));
+    mean_reward <- old_mean_reward + (sampled_reward - old_mean_reward)/i
+    sd_reward <-sqrt(incremental_variance(i,sampled_reward,old_mean_reward,old_variance))
   }
 
   reward_likelihood <- rnorm(100, mean=mean_reward, sd=sd_reward) 
