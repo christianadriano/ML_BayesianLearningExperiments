@@ -3,7 +3,7 @@
 
 Example from https://www.r-bloggers.com/understanding-bayesian-inference-with-a-simple-example-in-r/
 check also - http://www.sumsar.net/ 
-Coin flipping experiment, which wemodel with a binomial distribution: binomial(n, p)
+Coin flipping experiment, with a binomial distribution: binomial(n, p)
 
 n = the number of tosses
 p = probability to obtain a head. 
@@ -50,7 +50,7 @@ R <- likelihood(h,n,p_prime)/likelihood(h,n,p) * (dbeta(p_prime,1,1)/dbeta(p,1,1
 
 posterior <- data.frame()  
 
-# Set the lenght of the loop (Marcov Chain, number of iterations).  
+# Set the lenght of the loop (Markov Chain, number of iterations).  
 nrep <- 5000  
 # Start the loop (MCMC)  
 for (i in 1:nrep) {  
